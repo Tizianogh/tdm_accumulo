@@ -1,7 +1,5 @@
 package tdm.accumulo.model;
 
-import com.opencsv.bean.CsvBindByPosition;
-
 import lombok.Data;
 
 @Data

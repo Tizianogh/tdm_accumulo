@@ -1,6 +1,6 @@
 package tdm.accumulo.Core;
 
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.List;
 
 import org.apache.accumulo.core.client.AccumuloClient;
@@ -12,9 +12,11 @@ import org.apache.accumulo.core.client.TableExistsException;
 import org.apache.accumulo.core.client.TableNotFoundException;
 import org.apache.accumulo.core.data.Mutation;
 
+import lombok.Getter;
 import tdm.accumulo.model.AirPlaneDelayInformationBean;
 import tdm.accumulo.parser.CSVBean;
 
+@Getter
 public class AccumuloCoreOperations {
     List<AirPlaneDelayInformationBean> results = null;
     public static final String TABLE_NAME = "AirPlaneDelay";
@@ -32,16 +34,21 @@ public class AccumuloCoreOperations {
         }
     }
 
-    public static void loadAccumuloTables(AccumuloClient client) {
+    public static List<AirPlaneDelayInformationBean> convertCSVToBean(Path path) {
         List<AirPlaneDelayInformationBean> results = null;
 
         try {
-            results = CSVBean.beanBuilder(Paths.get("src/assets/csv/airplane_final.csv"));
+            results = CSVBean.beanBuilder(path);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println(results.size());
+        return results;
+    }
 
-        try (BatchWriter writer = client.createBatchWriter("AirPlaneDelay")) {
+    public static void loadAccumuloTables(AccumuloClient client, Path path) {
+        List<AirPlaneDelayInformationBean> results = convertCSVToBean(path);
+        try (BatchWriter writer = client.createBatchWriter(TABLE_NAME)) {
 
             for (int i = 0; i < results.size(); i++) {
                 Mutation m = new Mutation(results.get(i).getID());
@@ -57,8 +64,8 @@ public class AccumuloCoreOperations {
                 m.put("transporteur_information", "OP_UNIQUE_CARRIER", results.get(i).getOP_UNIQUE_CARRIER());
                 m.put("transporteur_information", "OP_CARRIER_AIRLINE_ID", results.get(i).getOP_CARRIER_AIRLINE_ID());
                 m.put("transporteur_information", "OP_CARRIER", results.get(i).getOP_CARRIER());
-                m.put("transporteur_information", "TAIL_NUM ", results.get(i).getTAIL_NUM());
-                m.put("transporteur_information", "OP_CARRIER_FL_NUM ", results.get(i).getOP_CARRIER_FL_NUM());
+                m.put("transporteur_information", "TAIL_NUM", results.get(i).getTAIL_NUM());
+                m.put("transporteur_information", "OP_CARRIER_FL_NUM", results.get(i).getOP_CARRIER_FL_NUM());
 
                 /*
                  * @columnFamily => aeroport_origine

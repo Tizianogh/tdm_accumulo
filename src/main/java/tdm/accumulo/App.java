@@ -1,20 +1,22 @@
 package tdm.accumulo;
 
+import java.nio.file.Paths;
 import java.util.Map;
 
 import org.apache.accumulo.core.client.Accumulo;
 import org.apache.accumulo.core.client.AccumuloClient;
-import org.apache.accumulo.core.client.ScannerBase;
+import org.apache.accumulo.core.client.Scanner;
 import org.apache.accumulo.core.client.TableNotFoundException;
-import org.apache.accumulo.core.data.Key;
-import org.apache.accumulo.core.data.Value;
 import org.apache.accumulo.core.security.Authorizations;
+import org.apache.hadoop.io.Text;
 
 import tdm.accumulo.Core.AccumuloCoreOperations;
 
 public class App {
+  public static final String NAME = AccumuloCoreOperations.TABLE_NAME;
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws TableNotFoundException {
+    System.out.println("test");
 
     AccumuloClient client = Accumulo.newClient()
         .to("uno", "localhost:2181")
@@ -22,18 +24,15 @@ public class App {
         .build();
 
     AccumuloCoreOperations.createAccumuloTable(client);
-    AccumuloCoreOperations.loadAccumuloTables(client);
+    AccumuloCoreOperations.loadAccumuloTables(client,
+        Paths.get("src/assets/csv/airplane_final.csv"));
 
-    try (ScannerBase scan = client.createScanner("AirPlaneDelay",
-        Authorizations.EMPTY)) {
-      System.out.println("Gotham Police Department Persons of Interest:");
-      for (Map.Entry<Key, Value> entry : scan) {
-        System.out.printf("Key : %-50s  Value : %s\n", entry.getKey(),
-            entry.getValue());
-      }
-    } catch (TableNotFoundException e) {
-      System.err.println(e.getMessage());
-    }
+    Scanner scanner = client.createScanner(NAME, new Authorizations());
+
+    // Sur le mois, combien de vols cancelled ?
+    // System.out.println(Request.getNumberOfCancelledInMonth(scanner));
+    // System.out.println(Request.getAeroportWithMostOccurences(scanner));
+    scanner.close();
 
   }
 }

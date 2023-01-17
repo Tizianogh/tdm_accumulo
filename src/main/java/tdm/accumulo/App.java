@@ -10,6 +10,7 @@ import org.apache.accumulo.core.client.TableNotFoundException;
 import org.apache.accumulo.core.security.Authorizations;
 import org.apache.hadoop.io.Text;
 
+import request.Request;
 import tdm.accumulo.Core.AccumuloCoreOperations;
 
 public class App {
@@ -23,16 +24,13 @@ public class App {
         .as("root", "secret")
         .build();
 
-    AccumuloCoreOperations.createAccumuloTable(client);
-    AccumuloCoreOperations.loadAccumuloTables(client,
-        Paths.get("src/assets/csv/airplane_final.csv"));
-
-    Scanner scanner = client.createScanner(NAME, new Authorizations());
+    // AccumuloCoreOperations.createAccumuloTable(client);
+    // AccumuloCoreOperations.loadAccumuloTables(client,
+    // Paths.get("src/assets/csv/airplane_final.csv"));
 
     // Sur le mois, combien de vols cancelled ?
     // System.out.println(Request.getNumberOfCancelledInMonth(scanner));
-    // System.out.println(Request.getAeroportWithMostOccurences(scanner));
-    scanner.close();
 
+    System.out.println(Request.getDelayTimes(client));
   }
 }

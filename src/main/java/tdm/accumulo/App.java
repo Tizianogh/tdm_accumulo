@@ -24,13 +24,19 @@ public class App {
         .as("root", "secret")
         .build();
 
-    // AccumuloCoreOperations.createAccumuloTable(client);
-    // AccumuloCoreOperations.loadAccumuloTables(client,
-    // Paths.get("src/assets/csv/airplane_final.csv"));
+    /*
+     * AccumuloCoreOperations.createAccumuloTable(client);
+     * AccumuloCoreOperations.loadAccumuloTables(client,
+     * Paths.get("src/assets/csv/airplane_final.csv"));
+     */
 
     // Sur le mois, combien de vols cancelled ?
     // System.out.println(Request.getNumberOfCancelledInMonth(scanner));
 
-    System.out.println(Request.getDelayTimes(client));
+    // System.out.println(Request.getDelayTimes(client));
+    // System.out.println(Request.getVoyageWithMaxDistance(client));
+
+    Request.getAvfOfDayOfWeekWithWithTheMostImportantDistance(client);
+
   }
 }
